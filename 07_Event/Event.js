@@ -2,14 +2,16 @@
 // const transferEvents = await contract.queryFilter("事件名", [起始区块高度，结束区块高度])
 // 其中起始区块高度和结束区块高度为选填参数。
 
-import { ethers } from "ethers";
+import {ethers} from "ethers";
 // playcode免费版不能安装ethers，用这条命令，需要从网络上import包（把上面这行注释掉）
 // import { ethers } from "https://cdn-cors.ethers.io/lib/ethers-5.6.9.esm.min.js";
 
 // 利用Alchemy的rpc节点连接以太坊网络
-// 准备 alchemy API 可以参考https://github.com/AmazingAng/WTFSolidity/blob/main/Topics/Tools/TOOL04_Alchemy/readme.md 
-const ALCHEMY_GOERLI_URL = 'https://eth-goerli.alchemyapi.io/v2/GlaeWuylnNM3uuOo-SAwJxuwTdqHaY5l';
-const provider = new ethers.JsonRpcProvider(ALCHEMY_GOERLI_URL);
+// 准备 alchemy API 可以参考https://github.com/AmazingAng/WTFSolidity/blob/main/Topics/Tools/TOOL04_Alchemy/readme.md
+// const ALCHEMY_GOERLI_URL = 'https://eth-goerli.alchemyapi.io/v2/GlaeWuylnNM3uuOo-SAwJxuwTdqHaY5l';
+// const provider = new ethers.JsonRpcProvider(ALCHEMY_GOERLI_URL);
+
+const provider = new ethers.JsonRpcProvider('https://sepolia.infura.io/v3/8a8a926cab7c4687a853bd32c526c17b')
 
 // WETH ABI，只包含我们关心的Transfer事件
 const abiWETH = [
@@ -17,7 +19,7 @@ const abiWETH = [
 ];
 
 // 测试网WETH地址
-const addressWETH = '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6'
+const addressWETH = '0xa04e0490AD3612C3d0CD470d317BFb3c4C41Af3F'
 // 声明合约实例
 const contract = new ethers.Contract(addressWETH, abiWETH, provider)
 
@@ -29,7 +31,7 @@ const main = async () => {
     const block = await provider.getBlockNumber()
     console.log(`当前区块高度: ${block}`);
     console.log(`打印事件详情:`);
-    const transferEvents = await contract.queryFilter('Transfer', block - 10, block)
+    const transferEvents = await contract.queryFilter('Transfer', block - 100, block)
     // 打印第1个Transfer事件
     console.log(transferEvents[0])
 
