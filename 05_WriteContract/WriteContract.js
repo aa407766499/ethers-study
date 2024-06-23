@@ -18,7 +18,7 @@ import { ethers } from "ethers";
 const provider = new ethers.JsonRpcProvider('https://sepolia.infura.io/v3/8a8a926cab7c4687a853bd32c526c17b')
 
 // 利用私钥和provider创建wallet对象
-const privateKey = '0x227dbb8586117d55284e26620bc76534dfbd2394be34cf4a09cb775d593b6f2b'
+const privateKey = 'a803fc8c4530f6e456cb5d28d116014639c3c610eb5fc251c78ea9c4247c3ab3'
 const wallet = new ethers.Wallet(privateKey, provider)
 
 // WETH的ABI
@@ -35,7 +35,7 @@ const addressWETH = '0xa04e0490AD3612C3d0CD470d317BFb3c4C41Af3F'
 // WETH Contract
 
 // 测试钱包地址
-const testPrivateKey = '0xdb6b9bc379a4d34f094a6379f728dd8f0645a5cfdbe1541aa10e9f8e8bcbf22d'
+const testPrivateKey = 'c94116a1df75f74bfbacd86c7f2cda79bcb725efb746c7c555c583f2e28f6e97'
 const testWallet = new ethers.Wallet(testPrivateKey, provider)
 const testAddress = testWallet.getAddress()
 
@@ -57,12 +57,12 @@ const main = async () => {
     const balanceETH = await provider.getBalance(wallet)
     console.log(`test: ${ethers.formatEther(balanceETH)}`);
     // 如果钱包ETH足够
-    if (ethers.formatEther(balanceETH) > 0.000015) {
+    if (ethers.formatEther(balanceETH) > 0.001) {
 
         // 2. 调用deposit()函数，将0.001 ETH转为WETH
         console.log("\n2. 调用deposit()函数，存入0.001 ETH")
         // 发起交易
-        const tx = await contractWETH.deposit({value: ethers.parseEther("0.00001")})
+        const tx = await contractWETH.deposit({value: ethers.parseEther("0.001")})
         // 等待交易上链
         await tx.wait()
         console.log(`交易详情：`)
@@ -73,7 +73,7 @@ const main = async () => {
         // 3. 调用transfer()函数，将0.001 WETH转账给 vitalik
         console.log("\n3. 调用transfer()函数，给vitalik转账0.001 WETH")
         // 发起交易
-        const tx2 = await contractWETH.transfer(testAddress, ethers.parseEther("0.000001"))
+        const tx2 = await contractWETH.transfer(testAddress, ethers.parseEther("0.0001"))
         // 等待交易上链
         await tx2.wait()
         const balanceWETH_transfer = await contractWETH.balanceOf(address)
