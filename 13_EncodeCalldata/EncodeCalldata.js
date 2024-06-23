@@ -3,14 +3,16 @@
 // const interface = ethers.Interface(abi)
 // 直接从contract中获取
 // const interface2 = contract.interface
-import { ethers } from "ethers";
+import {ethers} from "ethers";
 
 //准备 alchemy API 可以参考https://github.com/AmazingAng/WTFSolidity/blob/main/Topics/Tools/TOOL04_Alchemy/readme.md
-const ALCHEMY_GOERLI_URL = 'https://eth-goerli.alchemyapi.io/v2/GlaeWuylnNM3uuOo-SAwJxuwTdqHaY5l';
-const provider = new ethers.JsonRpcProvider(ALCHEMY_GOERLI_URL);
+// const ALCHEMY_GOERLI_URL = 'https://eth-goerli.alchemyapi.io/v2/GlaeWuylnNM3uuOo-SAwJxuwTdqHaY5l';
+// const provider = new ethers.JsonRpcProvider(ALCHEMY_GOERLI_URL);
+
+const provider = new ethers.JsonRpcProvider('https://sepolia.infura.io/v3/8a8a926cab7c4687a853bd32c526c17b')
 
 // 利用私钥和provider创建wallet对象
-const privateKey = '0x227dbb8586117d55284e26620bc76534dfbd2394be34cf4a09cb775d593b'
+const privateKey = 'a803fc8c4530f6e456cb5d28d116014639c3c610eb5fc251c78ea9c4247c3ab3'
 const wallet = new ethers.Wallet(privateKey, provider)
 
 // WETH的ABI
@@ -19,7 +21,7 @@ const abiWETH = [
     "function deposit() public payable",
 ];
 // WETH合约地址（Goerli测试网）
-const addressWETH = '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6'
+const addressWETH = '0xa04e0490AD3612C3d0CD470d317BFb3c4C41Af3F'
 
 // 声明WETH合约
 const contractWETH = new ethers.Contract(addressWETH, abiWETH, wallet)
@@ -33,7 +35,7 @@ const main = async () => {
     const param1 = contractWETH.interface.encodeFunctionData(
         "balanceOf",
         [address]
-      );
+    );
     console.log(`编码结果： ${param1}`)
     // 创建交易
     const tx1 = {
@@ -47,20 +49,21 @@ const main = async () => {
     //读取钱包内ETH余额
     const balanceETH = await provider.getBalance(wallet)
     // 如果钱包ETH足够
-    if(ethers.formatEther(balanceETH) > 0.0015){
+    if (ethers.formatEther(balanceETH) > 0.0015) {
 
         // 2. 调用deposit()函数，将0.001 ETH转为WETH
         console.log("\n2. 调用deposit()函数，存入0.001 ETH")
         // 编码calldata
         const param2 = contractWETH.interface.encodeFunctionData(
             "deposit"
-            );
+        );
         console.log(`编码结果： ${param2}`)
         // 创建交易
         const tx2 = {
             to: addressWETH,
             data: param2,
-            value: ethers.parseEther("0.001")}
+            value: ethers.parseEther("0.001")
+        }
         // 发起交易，写入操作需要 wallet.sendTransaction(tx)
         const receipt1 = await wallet.sendTransaction(tx2)
         // 等待交易上链
@@ -70,7 +73,7 @@ const main = async () => {
         const balanceWETH_deposit = await contractWETH.balanceOf(address)
         console.log(`存款后WETH持仓: ${ethers.formatEther(balanceWETH_deposit)}\n`)
 
-    }else{
+    } else {
         // 如果ETH不足
         console.log("ETH不足，去水龙头领一些Goerli ETH")
         console.log("1. chainlink水龙头: https://faucets.chain.link/goerli")
