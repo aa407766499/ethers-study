@@ -2,7 +2,7 @@
 // const contract = new ethers.Contract(address, abi, signer);
 // 参数分别为合约地址`address`，合约ABI `abi`，Signer变量`signer`
 
-import { ethers } from "ethers";
+import {ethers} from "ethers";
 // playcode免费版不能安装ethers，用这条命令，需要从网络上import包（把上面这行注释掉）
 // import { ethers } from "https://cdn-cors.ethers.io/lib/ethers-5.6.9.esm.min.js";
 
@@ -62,7 +62,7 @@ const main = async () => {
         // 2. 调用deposit()函数，将0.001 ETH转为WETH
         console.log("\n2. 调用deposit()函数，存入0.001 ETH")
         // 发起交易
-        const tx = await contractWETH.deposit({value: ethers.parseEther("0.001")})
+        const tx = await contractWETH.deposit({value: ethers.parseEther("0.01")})
         // 等待交易上链
         await tx.wait()
         console.log(`交易详情：`)
@@ -79,7 +79,7 @@ const main = async () => {
         const balanceWETH_transfer = await contractWETH.balanceOf(address)
         console.log(`转账后WETH持仓: ${ethers.formatEther(balanceWETH_transfer)}\n`)
 
-    }else{
+    } else {
         // 如果ETH不足
         console.log("ETH不足，去水龙头领一些Goerli ETH")
         console.log("1. chainlink水龙头: https://faucets.chain.link/goerli")
