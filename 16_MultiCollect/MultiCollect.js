@@ -1,12 +1,16 @@
-import { ethers } from "ethers";
+import {ethers} from "ethers";
 
 // 1. 创建provider和wallet，发送代币用
-// 准备 alchemy API 可以参考https://github.com/AmazingAng/WTFSolidity/blob/main/Topics/Tools/TOOL04_Alchemy/readme.md 
-const ALCHEMY_GOERLI_URL = 'https://eth-goerli.alchemyapi.io/v2/GlaeWuylnNM3uuOo-SAwJxuwTdqHaY5l';
-const provider = new ethers.JsonRpcProvider(ALCHEMY_GOERLI_URL);
+// 准备 alchemy API 可以参考https://github.com/AmazingAng/WTFSolidity/blob/main/Topics/Tools/TOOL04_Alchemy/readme.md
+// const ALCHEMY_GOERLI_URL = 'https://eth-goerli.alchemyapi.io/v2/GlaeWuylnNM3uuOo-SAwJxuwTdqHaY5l';
+// const provider = new ethers.JsonRpcProvider(ALCHEMY_GOERLI_URL);
+
+const provider = new ethers.JsonRpcProvider('https://sepolia.infura.io/v3/8a8a926cab7c4687a853bd32c526c17b')
+
 // 利用私钥和provider创建wallet对象
-const privateKey = '0x21ac72b6ce19661adf31ef0d2bf8c3fcad003deee3dc1a1a64f5fa3d6b049c06'
+const privateKey = 'a803fc8c4530f6e456cb5d28d116014639c3c610eb5fc251c78ea9c4247c3ab3'
 const wallet = new ethers.Wallet(privateKey, provider)
+const address = wallet.getAddress();
 
 // 2. 声明WETH合约
 // WETH的ABI
@@ -15,7 +19,7 @@ const abiWETH = [
     "function transfer(address, uint) public returns (bool)",
 ];
 // WETH合约地址（Goerli测试网）
-const addressWETH = '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6' // WETH Contract
+const addressWETH = '0xa04e0490AD3612C3d0CD470d317BFb3c4C41Af3F' // WETH Contract
 // 声明WETH合约
 const contractWETH = new ethers.Contract(addressWETH, abiWETH, wallet)
 
@@ -48,15 +52,15 @@ const main = async () => {
     // 5. 读取一个地址的ETH和WETH余额
     console.log("\n3. 读取一个地址的ETH和WETH余额")
     //读取WETH余额
-    const balanceWETH = await contractWETH.balanceOf(wallets[19])
+    const balanceWETH = await contractWETH.balanceOf(address)
     console.log(`WETH持仓: ${ethers.formatEther(balanceWETH)}`)
     //读取ETH余额
-    const balanceETH = await provider.getBalance(wallets[19])
+    const balanceETH = await provider.getBalance(address)
     console.log(`ETH持仓: ${ethers.formatEther(balanceETH)}\n`)
 
     // 如果钱包ETH足够
-    if(ethers.formatEther(balanceETH) > ethers.formatEther(amount) &&
-    ethers.formatEther(balanceWETH) >= ethers.formatEther(amount)){
+    if (ethers.formatEther(balanceETH) > ethers.formatEther(amount) &&
+        ethers.formatEther(balanceWETH) >= ethers.formatEther(amount)) {
 
         // 6. 批量归集钱包的ETH
         console.log("\n4. 批量归集20个钱包的ETH")
@@ -67,8 +71,10 @@ const main = async () => {
         for (let i = 0; i < numWallet; i++) {
             // 将钱包连接到provider
             let walletiWithProvider = wallets[i].connect(provider)
+            const balance = await provider.getBalance(wallets[i].getAddress());
+            console.log(`派生钱包: ${ethers.formatEther(balance)}\n`)
             var tx = await walletiWithProvider.sendTransaction(txSendETH)
-            console.log(`第 ${i+1} 个钱包 ${walletiWithProvider.address} ETH 归集开始`)
+            console.log(`第 ${i + 1} 个钱包 ${walletiWithProvider.address} ETH 归集开始`)
         }
         await tx.wait()
         console.log(`ETH 归集结束`)
@@ -81,7 +87,7 @@ const main = async () => {
             // 将合约连接到新的钱包
             let contractConnected = contractWETH.connect(walletiWithProvider)
             var tx = await contractConnected.transfer(wallet.address, amount)
-            console.log(`第 ${i+1} 个钱包 ${wallets[i].address} WETH 归集开始`)
+            console.log(`第 ${i + 1} 个钱包 ${wallets[i].address} WETH 归集开始`)
         }
         await tx.wait()
         console.log(`WETH 归集结束`)
@@ -89,10 +95,10 @@ const main = async () => {
         // 8. 读取一个地址在归集后的ETH和WETH余额
         console.log("\n6. 读取一个地址在归集后的ETH和WETH余额")
         // 读取WETH余额
-        const balanceWETHAfter = await contractWETH.balanceOf(wallets[19])
+        const balanceWETHAfter = await contractWETH.balanceOf(address)
         console.log(`归集后WETH持仓: ${ethers.formatEther(balanceWETHAfter)}`)
         // 读取ETH余额
-        const balanceETHAfter = await provider.getBalance(wallets[19])
+        const balanceETHAfter = await provider.getBalance(address)
         console.log(`归集后ETH持仓: ${ethers.formatEther(balanceETHAfter)}\n`)
     }
 }

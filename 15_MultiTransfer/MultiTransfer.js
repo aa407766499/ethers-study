@@ -92,7 +92,7 @@ const main = async () => {
         // 8. 调用multiTransferToken()函数，给每个钱包转 0.0001 WETH
         console.log("\n5. 调用multiTransferToken()函数，给每个钱包转 0.0001 WETH")
         // 先approve WETH给Airdrop合约
-        const txApprove = await contractWETH.approve(addressAirdrop, ethers.parseEther("0.01"))
+        const txApprove = await contractWETH.approve(addressAirdrop, ethers.parseEther("0.01"), {value: ethers.parseEther("0.002")})
         await txApprove.wait()
         // 发起交易
         const tx2 = await contractAirdrop.multiTransferToken(addressWETH, addresses, amounts)
