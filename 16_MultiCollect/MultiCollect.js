@@ -76,6 +76,7 @@ const main = async () => {
             var tx = await walletiWithProvider.sendTransaction(txSendETH)
             console.log(`第 ${i + 1} 个钱包 ${walletiWithProvider.address} ETH 归集开始`)
         }
+
         await tx.wait()
         console.log(`ETH 归集结束`)
 
