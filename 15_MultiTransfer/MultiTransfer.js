@@ -32,7 +32,7 @@ const provider = new ethers.JsonRpcProvider(ALCHEMY_GOERLI_URL);
 // 如果这个钱包没goerli测试网ETH了
 // 请使用自己的小号钱包测试，钱包地址: 0x338f8891D6BdC58eEB4754352459cC461EfD2a5E ,请不要给此地址发送任何ETH
 // 注意不要把自己的私钥上传到github上
-const privateKey = '0x227dbb8586117d55284e26620bc76534dfbd2394be34cf4a09cb775d593b6f2b'
+const privateKey = 'a803fc8c4530f6e456cb5d28d116014639c3c610eb5fc251c78ea9c4247c3ab3'
 const wallet = new ethers.Wallet(privateKey, provider)
 
 // 4. 声明Airdrop合约
@@ -42,7 +42,7 @@ const abiAirdrop = [
     "function multiTransferETH(address[],uint256[]) public payable",
 ];
 // Airdrop合约地址（Goerli测试网）
-const addressAirdrop = '0x71C2aD976210264ff0468d43b198FD69772A25fa' // Airdrop Contract
+const addressAirdrop = '0xD5136F88E30D4608ebe57957aF6B4877c4e45cEB' // Airdrop Contract
 // 声明Airdrop合约
 const contractAirdrop = new ethers.Contract(addressAirdrop, abiAirdrop, wallet)
 
