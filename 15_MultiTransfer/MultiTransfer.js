@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import {ethers} from "ethers";
 
 // 1. 创建HD钱包
 console.log("\n1. 创建HD钱包")
@@ -24,9 +24,11 @@ const amounts = Array(20).fill(ethers.parseEther("0.0001"))
 console.log(`发送数额：${amounts}`)
 
 // 3. 创建provider和wallet，发送代币用
-//准备 alchemy API 可以参考https://github.com/AmazingAng/WTFSolidity/blob/main/Topics/Tools/TOOL04_Alchemy/readme.md 
-const ALCHEMY_GOERLI_URL = 'https://eth-goerli.alchemyapi.io/v2/GlaeWuylnNM3uuOo-SAwJxuwTdqHaY5l';
-const provider = new ethers.JsonRpcProvider(ALCHEMY_GOERLI_URL);
+//准备 alchemy API 可以参考https://github.com/AmazingAng/WTFSolidity/blob/main/Topics/Tools/TOOL04_Alchemy/readme.md
+// const ALCHEMY_GOERLI_URL = 'https://eth-goerli.alchemyapi.io/v2/GlaeWuylnNM3uuOo-SAwJxuwTdqHaY5l';
+// const provider = new ethers.JsonRpcProvider(ALCHEMY_GOERLI_URL);
+
+const provider = new ethers.JsonRpcProvider('https://sepolia.infura.io/v3/8a8a926cab7c4687a853bd32c526c17b')
 
 // 利用私钥和provider创建wallet对象
 // 如果这个钱包没goerli测试网ETH了
@@ -34,6 +36,7 @@ const provider = new ethers.JsonRpcProvider(ALCHEMY_GOERLI_URL);
 // 注意不要把自己的私钥上传到github上
 const privateKey = 'a803fc8c4530f6e456cb5d28d116014639c3c610eb5fc251c78ea9c4247c3ab3'
 const wallet = new ethers.Wallet(privateKey, provider)
+const address = wallet.getAddress();
 
 // 4. 声明Airdrop合约
 // Airdrop的ABI
@@ -54,7 +57,7 @@ const abiWETH = [
     "function approve(address, uint256) public returns (bool)"
 ];
 // WETH合约地址（Goerli测试网）
-const addressWETH = '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6' // WETH Contract
+const addressWETH = '0xa04e0490AD3612C3d0CD470d317BFb3c4C41Af3F' // WETH Contract
 // 声明WETH合约
 const contractWETH = new ethers.Contract(addressWETH, abiWETH, wallet)
 
@@ -64,16 +67,16 @@ const main = async () => {
     // 6. 读取一个地址的ETH和WETH余额
     console.log("\n3. 读取一个地址的ETH和WETH余额")
     //读取WETH余额
-    const balanceWETH = await contractWETH.balanceOf(addresses[10])
+    const balanceWETH = await contractWETH.balanceOf(address)
     console.log(`WETH持仓: ${ethers.formatEther(balanceWETH)}\n`)
     //读取ETH余额
-    const balanceETH = await provider.getBalance(addresses[10])
+    const balanceETH = await provider.getBalance(address)
     console.log(`ETH持仓: ${ethers.formatEther(balanceETH)}\n`)
 
     const myETH = await provider.getBalance(wallet)
     const myToken = await contractWETH.balanceOf(wallet.getAddress())
     // 如果钱包ETH足够和WETH足够
-    if(ethers.formatEther(myETH) > 0.002 && ethers.formatEther(myToken) >= 0.002){
+    if (ethers.formatEther(myETH) > 0.002 && ethers.formatEther(myToken) >= 0.002) {
 
         // 7. 调用multiTransferETH()函数，给每个钱包转 0.0001 ETH
         console.log("\n4. 调用multiTransferETH()函数，给每个钱包转 0.0001 ETH")
@@ -83,13 +86,13 @@ const main = async () => {
         await tx.wait()
         // console.log(`交易详情：`)
         // console.log(tx)
-        const balanceETH2 = await provider.getBalance(addresses[10])
+        const balanceETH2 = await provider.getBalance(address)
         console.log(`发送后该钱包ETH持仓: ${ethers.formatEther(balanceETH2)}\n`)
-        
+
         // 8. 调用multiTransferToken()函数，给每个钱包转 0.0001 WETH
         console.log("\n5. 调用multiTransferToken()函数，给每个钱包转 0.0001 WETH")
         // 先approve WETH给Airdrop合约
-        const txApprove = await contractWETH.approve(addressAirdrop, ethers.parseEther("1"))
+        const txApprove = await contractWETH.approve(addressAirdrop, ethers.parseEther("0.01"), {value: ethers.parseEther("0.002")})
         await txApprove.wait()
         // 发起交易
         const tx2 = await contractAirdrop.multiTransferToken(addressWETH, addresses, amounts)
@@ -98,10 +101,10 @@ const main = async () => {
         // console.log(`交易详情：`)
         // console.log(tx2)
         // 读取WETH余额
-        const balanceWETH2 = await contractWETH.balanceOf(addresses[10])
+        const balanceWETH2 = await contractWETH.balanceOf(address)
         console.log(`发送后该钱包WETH持仓: ${ethers.formatEther(balanceWETH2)}\n`)
 
-    }else{
+    } else {
         // 如果ETH和WETH不足
         console.log("ETH不足，请使用自己的小号钱包测试，并兑换一些WETH")
         console.log("1. chainlink水龙头: https://faucets.chain.link/goerli")
