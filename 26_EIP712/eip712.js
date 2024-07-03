@@ -2,8 +2,9 @@ import { ethers } from "ethers";
 
 // 利用Alchemy的rpc节点连接以太坊网络
 // 准备 alchemy API 可以参考https://github.com/AmazingAng/WTFSolidity/blob/main/Topics/Tools/TOOL04_Alchemy/readme.md 
-const ALCHEMY_GOERLI_URL = 'https://eth-goerli.alchemyapi.io/v2/GlaeWuylnNM3uuOo-SAwJxuwTdqHaY5l';
-const provider = new ethers.JsonRpcProvider(ALCHEMY_GOERLI_URL);
+// const ALCHEMY_GOERLI_URL = 'https://eth-goerli.alchemyapi.io/v2/GlaeWuylnNM3uuOo-SAwJxuwTdqHaY5l';
+// const provider = new ethers.JsonRpcProvider(ALCHEMY_GOERLI_URL);
+const provider = new ethers.JsonRpcProvider('https://sepolia.infura.io/v3/8a8a926cab7c4687a853bd32c526c17b')
 
 // 利用私钥和provider创建wallet对象
 const privateKey = '0x503f38a9c967ed597e47fe25643985f032b072db8075426a92110f82df48dfcb'
@@ -45,6 +46,8 @@ const main = async () => {
     console.log("Signature:", signature);
     // 验证 EIP712 签名，从签名和消息复原出 signer 地址
     let eip712Signer = ethers.verifyTypedData(domain, types, message, signature)
+    const address = await wallet.getAddress()
+    console.log("address: ",address)
     console.log("EIP712 Signer: ", eip712Signer)
 }
 
